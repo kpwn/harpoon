@@ -8,11 +8,30 @@
 Usage
 -
 
+#### With helper macros
+- Add the header: 
+`#include "libhook.h"`
+
+- Define the hook: 
+```
+HOOK_DEFINE(return_type, function_to_hook, ... arguments ...) {
+    HOOK_ORIG(function_to_hook, ... arguments ...); // call original function 
+}
+```
+
+- Apply the hook: 
+```
+CTOR() { // defines a constructor
+  HOOK_THROW(function_to_hook);
+}
+```
+
+#### Without helper macros
 - Add the header: 
 `#include "libhook.h"`
 
 - Add a definition for the function pointer to the original function: 
-`static void (*hooked_fcn_orig)(argument_types);`
+`static return_type (*hooked_fcn_orig)(argument_types);`
 
 - Hook the function by running (typically in a dynamic library constructor): 
 `throw_hook((void*)function_to_hook, (void*)my_replacement, (void**) &hooked_fcn_orig);`
