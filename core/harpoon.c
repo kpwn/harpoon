@@ -6,7 +6,7 @@
 #define ZONE_SIZE 0x30
 #define native_word_t uint64_t
 #define ZONE_ALLOCATOR_BEEF 0xbbadbeefbbadbeef
-#define __x86_64__COMPACT_HOOK
+// #define __x86_64__COMPACT_HOOK <- unstable
 #ifdef __x86_64__COMPACT_HOOK
 #define ABSJUMP_SUB_COMPACT(x) (5+(uint32_t)(x))
 #define IS_NEAR(orig,repl) IS_NEAR_((uint64_t)orig,(uint64_t)repl)
@@ -121,13 +121,15 @@ vm_address_t find_near(vm_address_t addr) {
                 prev->list_next = cur->list_next;
                 free(cur);
             }
+            printf("got NEAR tramp\n");
+
             return rtn;
         }
         prev = cur;
         cur = cur->list_next;
     }
     cur = &zbg;
-    //printf("allocating new near zone\n");
+    printf("allocating new near zone\n");
     kern_return_t kr      = KERN_SUCCESS;
     vm_size_t     size    = 0;
     vm_size_t     old_size    = 0;
@@ -225,11 +227,11 @@ void throw_hook(void *orig, void *repl, void **orig_ptr)
     vm_address_t nalloc=0;
     xc.a = 0xE9;
     if (IS_NEAR(orig,repl)) {
-        //printf("no trampoline needed for short jump to %p from %p\n", repl, orig);
+        printf("no trampoline needed for short jump to %p from %p\n", repl, orig);
         hook_size = sizeof(opst_compact);
     } else
     if (( nalloc = find_near((vm_address_t)orig)) != 0) {
-        //printf("allocated trampoline at %p\n", nalloc);
+        printf("allocated trampoline at %p\n", nalloc);
         hook_size = sizeof(opst_compact);
         x.b = (native_word_t) repl - ABSJUMP_SUB(orig);
         memcpy((void*)nalloc, &x, sizeof(x));
