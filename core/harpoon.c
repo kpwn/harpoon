@@ -14,12 +14,12 @@ typedef struct __attribute__((__packed__)) opst {
 
 #ifdef __x86_64__
 #define ABSJUMP_SUB(x) 0
-#define ZONE_SIZE ((1 + ((sizeof(opst)) >> 8)) << 8)
+#define ZONE_SIZE 0x30
 #define native_word_t uint64_t
 #define ZONE_ALLOCATOR_BEEF 0xbbadbeefbbadbeef
 #elif __i386__
 #define ABSJUMP_SUB(x) (5+(uint32_t)(x))
-#define ZONE_SIZE ((1 + ((sizeof(opst)) >> 8)) << 8)
+#define ZONE_SIZE 0x20
 #define native_word_t uint32_t
 #define ZONE_ALLOCATOR_BEEF 0xbbadbeef
 #endif
